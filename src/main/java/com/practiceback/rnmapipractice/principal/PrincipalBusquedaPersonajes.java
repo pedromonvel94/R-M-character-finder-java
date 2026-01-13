@@ -21,12 +21,11 @@ public class PrincipalBusquedaPersonajes {
         while(true){
             System.out.println("Deseas realizar una busqueda? (Y/N)");
             String searchAgreement = scanner.nextLine();
-s
             if (searchAgreement.equalsIgnoreCase("y")){
 
                 Boolean menuElection = false;
-                String searchType;
-                String typeCharacterSearch;
+                String searchType = "";
+                String typeCharacterSearch = "";
 
                 while (!menuElection){
                     System.out.println("Cual tipo de busqueda quieres hacer?" + "\n" +
@@ -58,7 +57,7 @@ s
                     }
                 }
 
-                String path = "https://rickandmortyapi.com/api/" + URLEncoder.encode(searchType + "/" + ); //ojo que aqui me falta donde estan las comillas debe ir la variable que me brinde, ya sea el id, el nombre o lo que vaya a buscar dependiendo de la categoria y el objeto que vaya a usar.
+                String path = "https://rickandmortyapi.com/api/" + URLEncoder.encode(searchType + "/"); //ojo que aqui me falta donde estan las comillas debe ir la variable que me brinde, ya sea el id, el nombre o lo que vaya a buscar dependiendo de la categoria y el objeto que vaya a usar.
 
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
