@@ -1,4 +1,4 @@
-package com.practiceback.rnmapipractice.modelos;
+package main.java.com.practiceback.rnmapipractice.modelos;
 
 public class Personajes {
     int id;
@@ -17,6 +17,10 @@ public class Personajes {
 
     public Personajes(PersonajesRnMApi personajesRnMApi) {
         this.id = personajesRnMApi.id();
+        this.name = personajesRnMApi.name();
+        this.status = personajesRnMApi.status();
+        this.species = personajesRnMApi.species();
+        this.image = personajesRnMApi.image();
     }
 
     public int getId() {
@@ -57,6 +61,16 @@ public class Personajes {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    @Override
+    public String toString() {
+        return "--------------------------------" + "\n" +
+                "Name: " + this.name + ", \n" +
+                "Status: " + this.status + ", \n" +
+                "Species: " + this.species + ", \n" +
+                "Image: " + this.image + ", \n" +
+                "---------------------------------";
     }
 }
 
