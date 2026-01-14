@@ -3,9 +3,8 @@ package main.java.com.practiceback.rnmapipractice.principal;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import main.java.com.practiceback.rnmapipractice.modelos.Personajes;
-import main.java.com.practiceback.rnmapipractice.modelos.PersonajesRnMApi;
-
+import main.java.com.practiceback.rnmapipractice.modelos.*;
+import main.java.com.practiceback.rnmapipractice.utils.JsonFileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -20,6 +19,8 @@ public class PrincipalBusquedaPersonajes {
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         List<Personajes> listaPersonajes = new ArrayList<>();
+        List<Locaciones> listaLocaciones = new ArrayList<>();
+        List<Episodios> listaEpisodios = new ArrayList<>();
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
                 .setPrettyPrinting()
@@ -34,6 +35,8 @@ public class PrincipalBusquedaPersonajes {
                 String searchType = "";
                 String typeCharacterSearch = "";
                 String parameterSearch = "";
+                String base = "https://rickandmortyapi.com/api/";
+                String path;
 
                 while (!menuElection){
                     System.out.println("Cual tipo de busqueda quieres hacer?" + "\n" +
@@ -126,7 +129,13 @@ public class PrincipalBusquedaPersonajes {
                     }
                 }
 
-                String path = "https://rickandmortyapi.com/api/" + searchType + "/" + URLEncoder.encode(parameterSearch, "UTF-8");
+                if (searchType.equals("character")) {
+                    path = typeCharacterSearch.equalsIgnoreCase("id") ? base + "character/" + parameterSearch : base + "character/?name=" + URLEncoder.encode(parameterSearch, "UTF-8");
+                } else if (searchType.equals("episode")) {
+                    path = typeCharacterSearch.equalsIgnoreCase("#") ? base + "episode/" + parameterSearch : base + "episode/?name=" + URLEncoder.encode(parameterSearch, "UTF-8");
+                } else {
+                    path = base + "location/" + parameterSearch;
+                }
 
                 try{
                     HttpClient client = HttpClient.newBuilder()
@@ -143,29 +152,70 @@ public class PrincipalBusquedaPersonajes {
                     HttpResponse<String> response = client
                             .send(request, HttpResponse.BodyHandlers.ofString());
 
+                    int status = response.statusCode();
+                    if (status != 200) {
+                        System.out.println("Error HTTP: " + status);
+                        System.out.println(response.body());
+                        continue;
+                    }
+
                     String json = response.body();
 
-                    System.out.println("STATUS: " + response.statusCode()); //Este me sirve para poder probar cual es el estatus de respuesta que me esta arrojando el servidor.
-                    System.out.println("JSON: \n" + json); //Aqui lo que hago es imprimir el json tal cual me llega para verificar que los valores sean correctos
+                    //System.out.println("STATUS: " + response.statusCode()); //Este me sirve para poder probar cual es el estatus de respuesta que me esta arrojando el servidor.
+                    //System.out.println("JSON: \n" + json); //Aqui lo que hago es imprimir el json tal cual me llega para verificar que los valores sean correctos
 
-                    PersonajesRnMApi personajesRnMApi = gson.fromJson(json, PersonajesRnMApi.class);
+                    switch (searchType) {
+                        case "character" -> {
+                            if (typeCharacterSearch.equalsIgnoreCase("id")) {
+                                PersonajesRnMApi personajesRnMApi = gson.fromJson(json, PersonajesRnMApi.class);
+                                Personajes newCharacter = new Personajes(personajesRnMApi);
+                                listaPersonajes.add(newCharacter);
+                                System.out.println("Personaje encontrado:\n" + newCharacter);
 
-                    System.out.println(personajesRnMApi); //Otro test que hago para verificar que el objeto personajesRnMApi si contenga la informacion del personaje que necesito.
+                            } else {
+                                CharacterSearchResponse resp = gson.fromJson(json, CharacterSearchResponse.class);
+                                List<PersonajesRnMApi> resultados = resp.results();
 
-                    Personajes newCharacter = new Personajes(personajesRnMApi);
-                    listaPersonajes.add(newCharacter);
+                                if (resultados == null || resultados.isEmpty()) {
+                                    System.out.println("No se encontraron personajes con ese nombre.");
+                                } else {
+                                    PersonajesRnMApi primero = resultados.get(0);
+                                    Personajes personaje = new Personajes(primero);
+                                    listaPersonajes.add(personaje);
+                                    System.out.println("Primer resultado:\n" + personaje);
+                                }
+                            }
+                            JsonFileWriter.saveJson("PersonajesRnMApi.json", gson.toJson(listaPersonajes));
+                        }
+                        case "location" -> {
+                            LocacionesRnMApi locacionesRnMApi = gson.fromJson(json, LocacionesRnMApi.class);
+                            Locaciones newLocation = new Locaciones(locacionesRnMApi);
+                            listaLocaciones.add(newLocation);
+                            System.out.println("Locación encontrada:\n" + newLocation);
 
-                    System.out.println("Personaje encontrado: " + "\n" + newCharacter);
+                            JsonFileWriter.saveJson("LocacionesRnMApi.json", gson.toJson(listaLocaciones));
+                        }
+                        case "episode" -> {
+                            EpisodiosRnMApi episodiosRnMApi = gson.fromJson(json, EpisodiosRnMApi.class);
+                            Episodios newEpisode = new Episodios(episodiosRnMApi);
+                            listaEpisodios.add(newEpisode);
+                            System.out.println("Episodio encontrado:\n" + newEpisode);
+
+                            JsonFileWriter.saveJson("EpisodiosRnMApi.json", gson.toJson(listaEpisodios));
+                        }
+                        default -> System.out.println("Tipo de búsqueda no soportado: " + searchType);
+                    }
                 }catch (Exception e){
                     System.out.println("Error: " + e.getMessage());
                     e.printStackTrace();
-                    //Ojo que falta crear la exeption espeifica para los diferentes errores.
+                    //Ojo que me falta crear la exception especifica para cada uno los diferentes errores pero por ahora lo puedo dejar asi.
                 }
 
             } else if (searchAgreement.equalsIgnoreCase("n")) {
                 System.out.println("Gracias por usar nuestra busqueda!");
                 break;
             }
+
         }
     }
 }

@@ -14,6 +14,10 @@ public class Episodios {
     }
 
     public Episodios(EpisodiosRnMApi episodiosRnMApi ) {
+        this.id = episodiosRnMApi.id();
+        this.name = episodiosRnMApi.name();
+        this.airDate = episodiosRnMApi.airDate();
+        this.episode = episodiosRnMApi.episode();
     }
 
     public int getId() {

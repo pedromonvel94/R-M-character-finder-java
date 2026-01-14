@@ -30,7 +30,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
-                    <mainClass>com.practiceback.rnmapipractice.principal.PrincipalBusquedaPersonajes</mainClass>
+                    <mainClass>main.java.com.practiceback.rnmapipractice.principal.PrincipalBusquedaPersonajes</mainClass>
                 </configuration>
             </plugin>
         </plugins>
