@@ -24,31 +24,24 @@ public class Episodios {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getAirDate() {
         return airDate;
     }
 
-    public void setAirDate(String airDate) {
-        this.airDate = airDate;
-    }
-
     public String getEpisode() {
         return episode;
     }
 
-    public void setEpisode(String episode) {
-        this.episode = episode;
+    @Override
+    public String toString() {
+        return "--------------------------------\n" +
+                "Name: " + name + "\n" +
+                "Air date: " + airDate + "\n" +
+                "Episode: " + episode + "\n" +
+                "--------------------------------";
     }
 }

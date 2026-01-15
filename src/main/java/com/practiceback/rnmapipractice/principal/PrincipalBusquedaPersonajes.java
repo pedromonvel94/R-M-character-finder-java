@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import main.java.com.practiceback.rnmapipractice.modelos.*;
 import main.java.com.practiceback.rnmapipractice.utils.JsonFileWriter;
+import main.java.com.practiceback.rnmapipractice.utils.SearchFlow;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -18,6 +20,36 @@ import java.util.Scanner;
 public class PrincipalBusquedaPersonajes {
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
+
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+                .setPrettyPrinting()
+                .create();
+
+        SearchFlow flow = new SearchFlow(scanner, gson);
+
+        while (true) {
+            System.out.println("Deseas realizar una busqueda? (Y/N)");
+            String searchAgreement = scanner.nextLine();
+
+            if (searchAgreement.equalsIgnoreCase("exit")) {
+                System.out.println("Saliendo...");
+                return;
+            }
+
+            if (searchAgreement.equalsIgnoreCase("y")) {
+                flow.runOnce();
+            } else if (searchAgreement.equalsIgnoreCase("n")) {
+                System.out.println("Gracias por usar nuestra busqueda!");
+                break;
+            } else {
+                System.out.println("Opción no válida. Escribe Y o N (o EXIT).");
+            }
+        }
+    }
+}
+
+        /*
         List<Personajes> listaPersonajes = new ArrayList<>();
         List<Locaciones> listaLocaciones = new ArrayList<>();
         List<Episodios> listaEpisodios = new ArrayList<>();
@@ -218,4 +250,4 @@ public class PrincipalBusquedaPersonajes {
 
         }
     }
-}
+}*/
